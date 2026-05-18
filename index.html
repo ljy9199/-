@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>社区帖子编辑工具</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            padding: 15px;
+        }
+
+        .hint {
+            text-align: center;
+            font-size: 12px;
+            color: #999;
+            margin-bottom: 10px;
+        }
+
+        .editor-wrap {
+            width: 100%;
+            overflow: hidden;
+            border-radius: 12px;
+            background: #fff;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .editor-slider {
+            display: flex;
+            transition: transform 0.3s ease;
+        }
+
+        .editor-page {
+            width: 100%;
+            flex-shrink: 0;
+            padding: 15px;
+        }
+
+        .editor-page h3 {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #333;
+        }
+
+        .item {
+            margin-bottom: 10px;
+        }
+
+        .item label {
+            display: block;
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 4px;
+        }
+
+        .item input,
+        .item textarea {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            outline: none;
+        }
+
+        .item input:focus,
+        .item textarea:focus {
+            border-color: #0088ff;
+        }
+
+        .item .upload-box {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 8px 10px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .avatar-upload {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .upload-btn {
+            background: #999;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            cursor: pointer;
+            border: none;
+        }
+
+        .preview-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: #eee;
+            object-fit: cover;
+        }
+
+        .img-preview-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            background: #eee;
+            object-fit: cover;
+        }
+
+        .page-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 4px;
+            margin-top: 15px;
+        }
+
+        .page-indicator .bar {
+            flex: 1;
+            height: 5px;
+            border-radius: 3px;
+            border: 1px solid #ccc;
+            background: transparent;
+        }
+
+        .page-indicator .bar.active {
+            background: #ccc;
+        }
+
+        .community-page {
+            width: 100%;
+            background: #f5f7fa;
+        }
+
+        .post-card {
+            background: #fff;
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: #eee;
+            object-fit: cover;
+        }
+
+        .post-info {
+            margin-left: 12px;
+        }
+
+        .nickname-row {
+            display: flex;
+            align-items: end;
+            gap: 6px;
+        }
+
+        .nickname {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        .status {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .time {
+            font-size: 12px;
+            color: #999;
+            margin-top: 4px;
+        }
+
+        .post-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #222;
+        }
+
+        .post-content {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .post-img-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+        .post-img {
+            max-width: 100px;
+            border-radius: 8px;
+        }
+
+        .post-stat {
+            font-size: 12px;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .reply-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin: 0 0 10px 5px;
+            color: #333;
+        }
+
+        .reply-item {
+            display: flex;
+            background: #fff;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 10px;
+        }
+
+        .reply-right {
+            flex: 1;
+            margin-left: 12px;
+        }
+
+        .reply-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .floor {
+            font-size: 12px;
+            color: #999;
+        }
+
+        .reply-content {
+            font-size: 14px;
+            color: #444;
+            line-height: 1.5;
+            margin-bottom: 10px;
+        }
+
+        .reply-footer {
+            font-size: 12px;
+            color: #999;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .reply-img-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 10px;
+        }
+
+        .reply-img {
+            max-width: 100px;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="hint">左滑切换：主楼 → 1楼 → 2楼 → 3楼</div>
+
+    <div class="editor-wrap" id="editorWrap">
+        <div class="editor-slider" id="editorSlider">
+
+            <!-- 主楼 -->
+            <div class="editor-page">
+                <h3>编辑 主楼</h3>
+                <div class="item">
+                    <label>头像</label>
+                    <div class="avatar-upload">
+                        <button class="upload-btn" onclick="document.getElementById('p_avatar_input').click()">选择相册图片</button>
+                        <img class="preview-small" id="p_avatar_small" src="糕点师.jpg">
+                        <input type="file" id="p_avatar_input" class="file-input" accept="image/*" onchange="previewAvatar(this, 'p_avatar_small', 'prev_avatar')">
+                    </div>
+                </div>
+                <div class="item"><label>昵称</label><input type="text" id="p_name" value="糕点师"></div>
+                <div class="item"><label>状态</label><input type="text" id="p_status" value="状态: 热恋中❤️"></div>
+                <div class="item"><label>时间</label><input type="text" id="p_time" value="2026-5-20 13:14"></div>
+                <div class="item"><label>标题</label><input type="text" id="p_title" value="@小熊"></div>
+                <div class="item"><label>内容</label><textarea id="p_content">・ﻌ・：ᗜ 𖥦 ᗜ★品尝我的全世界🍴</textarea></div>
+                
+                <div class="item">
+                    <label>表情包</label>
+                    <div class="upload-box">
+                        <button class="upload-btn" onclick="document.getElementById('p_img_input').click()">选择相册图片</button>
+                        <img class="img-preview-small" id="p_img_small">
+                        <input type="file" id="p_img_input" class="file-input" accept="image/*" onchange="previewImg(this, 'p_img_small', 'prev_p_img')">
+                    </div>
+                </div>
+
+                <div class="item"><label>浏览</label><input type="text" id="p_view" value="1314"></div>
+                <div class="item"><label>点赞</label><input type="text" id="p_like" value="520"></div>
+                <div class="item"><label>回复数</label><input type="text" id="p_reply" value="52"></div>
+                <div class="page-indicator"><div class="bar active"></div><div class="bar"></div><div class="bar"></div><div class="bar"></div></div>
+            </div>
+
+            <!-- 1楼 -->
+            <div class="editor-page">
+                <h3>编辑 1楼</h3>
+                <div class="item">
+                    <label>头像</label>
+                    <div class="avatar-upload">
+                        <button class="upload-btn" onclick="document.getElementById('r1_avatar_input').click()">选择相册图片</button>
+                        <img class="preview-small" id="r1_avatar_small" src="熊奈.jpg">
+                        <input type="file" id="r1_avatar_input" class="file-input" accept="image/*" onchange="previewAvatar(this, 'r1_avatar_small', 'prev_r1_avatar')">
+                    </div>
+                </div>
+                <div class="item"><label>昵称</label><input type="text" id="r1_name" value="小熊"></div>
+                <div class="item"><label>状态</label><input type="text" id="r1_status" value="状态: 热恋中❤️"></div>
+                <div class="item"><label>时间</label><input type="text" id="r1_time" value="2026-5-20 13:15"></div>
+                <div class="item"><label>内容</label><input type="text" id="r1_content" value="请我吃毛豆？不用了谢谢。"></div>
+                <div class="item">
+                    <label>表情包</label>
+                    <div class="upload-box">
+                        <button class="upload-btn" onclick="document.getElementById('r1_img_input').click()">选择相册图片</button>
+                        <img class="img-preview-small" id="r1_img_small">
+                        <input type="file" id="r1_img_input" class="file-input" accept="image/*" onchange="previewImg(this, 'r1_img_small', 'prev_r1_img')">
+                    </div>
+                </div>
+                <div class="item"><label>点赞</label><input type="text" id="r1_like" value="52"></div>
+                <div class="page-indicator"><div class="bar"></div><div class="bar active"></div><div class="bar"></div><div class="bar"></div></div>
+            </div>
+
+            <!-- 2楼 -->
+            <div class="editor-page">
+                <h3>编辑 2楼</h3>
+                <div class="item">
+                    <label>头像</label>
+                    <div class="avatar-upload">
+                        <button class="upload-btn" onclick="document.getElementById('r2_avatar_input').click()">选择相册图片</button>
+                        <img class="preview-small" id="r2_avatar_small" src="队长.jpg">
+                        <input type="file" id="r2_avatar_input" class="file-input" accept="image/*" onchange="previewAvatar(this, 'r2_avatar_small', 'prev_r2_avatar')">
+                    </div>
+                </div>
+                <div class="item"><label>昵称</label><input type="text" id="r2_name" value="小队长"></div>
+                <div class="item"><label>状态</label><input type="text" id="r2_status" value="状态: 请勿打扰🚫"></div>
+                <div class="item"><label>时间</label><input type="text" id="r2_time" value="2026-5-20 13:16"></div>
+                <div class="item"><label>内容</label><input type="text" id="r2_content" value="？不许欺负小熊"></div>
+                <div class="item">
+                    <label>表情包</label>
+                    <div class="upload-box">
+                        <button class="upload-btn" onclick="document.getElementById('r2_img_input').click()">选择相册图片</button>
+                        <img class="img-preview-small" id="r2_img_small">
+                        <input type="file" id="r2_img_input" class="file-input" accept="image/*" onchange="previewImg(this, 'r2_img_small', 'prev_r2_img')">
+                    </div>
+                </div>
+                <div class="item"><label>点赞</label><input type="text" id="r2_like" value="25"></div>
+                <div class="page-indicator"><div class="bar"></div><div class="bar"></div><div class="bar active"></div><div class="bar"></div></div>
+            </div>
+
+            <!-- 3楼 -->
+            <div class="editor-page">
+                <h3>编辑 3楼</h3>
+                <div class="item">
+                    <label>头像</label>
+                    <div class="avatar-upload">
+                        <button class="upload-btn" onclick="document.getElementById('r3_avatar_input').click()">选择相册图片</button>
+                        <img class="preview-small" id="r3_avatar_small" src="大明星.jpg">
+                        <input type="file" id="r3_avatar_input" class="file-input" accept="image/*" onchange="previewAvatar(this, 'r3_avatar_small', 'prev_r3_avatar')">
+                    </div>
+                </div>
+                <div class="item"><label>昵称</label><input type="text" id="r3_name" value="大明星"></div>
+                <div class="item"><label>状态</label><input type="text" id="r3_status" value="状态: 我太难了🥺"></div>
+                <div class="item"><label>时间</label><input type="text" id="r3_time" value="2026-5-20 13:16"></div>
+                <div class="item"><label>内容</label><input type="text" id="r3_content" value=""></div>
+                <div class="item">
+                    <label>表情包</label>
+                    <div class="upload-box">
+                        <button class="upload-btn" onclick="document.getElementById('r3_img_input').click()">选择相册图片</button>
+                        <img class="img-preview-small" id="r3_img_small" src="杰佣表情包.jpg">
+                        <input type="file" id="r3_img_input" class="file-input" accept="image/*" onchange="previewImg(this, 'r3_img_small', 'prev_r3_img')">
+                    </div>
+                </div>
+                <div class="item"><label>点赞</label><input type="text" id="r3_like" value="13"></div>
+                <div class="page-indicator"><div class="bar"></div><div class="bar"></div><div class="bar"></div><div class="bar active"></div></div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 预览区 -->
+    <div class="community-page">
+        <div class="post-card">
+            <div class="post-header">
+                <img class="avatar" id="prev_avatar" src="糕点师.jpg">
+                <div class="post-info">
+                    <div class="nickname-row"><span class="nickname" id="prev_name"></span><span class="status" id="prev_status"></span></div>
+                    <div class="time" id="prev_time"></div>
+                </div>
+            </div>
+            <div class="post-title" id="prev_title"></div>
+            <div class="post-content" id="prev_content"></div>
+            <div class="post-img-list"><img class="post-img" id="prev_p_img"></div>
+            <div class="post-stat">
+                <span id="prev_view"></span><span id="prev_like"></span><span id="prev_reply"></span>
+            </div>
+        </div>
+
+        <div class="reply-title">全部回复</div>
+
+        <div class="reply-item">
+            <img class="avatar" id="prev_r1_avatar" src="熊奈.jpg">
+            <div class="reply-right">
+                <div class="reply-header"><div class="nickname-row"><span class="nickname" id="prev_r1_name"></span><span class="status" id="prev_r1_status"></span></div><span class="floor">1楼</span></div>
+                <div class="reply-content" id="prev_r1_content"></div>
+                <div class="reply-img-list"><img class="reply-img" id="prev_r1_img"></div>
+                <div class="reply-footer"><span id="prev_r1_time"></span><span id="prev_r1_like"></span></div>
+            </div>
+        </div>
+
+        <div class="reply-item">
+            <img class="avatar" id="prev_r2_avatar" src="队长.jpg">
+            <div class="reply-right">
+                <div class="reply-header"><div class="nickname-row"><span class="nickname" id="prev_r2_name"></span><span class="status" id="prev_r2_status"></span></div><span class="floor">2楼</span></div>
+                <div class="reply-content" id="prev_r2_content"></div>
+                <div class="reply-img-list"><img class="reply-img" id="prev_r2_img"></div>
+                <div class="reply-footer"><span id="prev_r2_time"></span><span id="prev_r2_like"></span></div>
+            </div>
+        </div>
+
+        <div class="reply-item">
+            <img class="avatar" id="prev_r3_avatar" src="大明星.jpg">
+            <div class="reply-right">
+                <div class="reply-header"><div class="nickname-row"><span class="nickname" id="prev_r3_name"></span><span class="status" id="prev_r3_status"></span></div><span class="floor">3楼</span></div>
+                <div class="reply-content" id="prev_r3_content"></div>
+                <div class="reply-img-list"><img class="reply-img" id="prev_r3_img" src="杰佣表情包.jpg"></div>
+                <div class="reply-footer"><span id="prev_r3_time"></span><span id="prev_r3_like"></span></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 滑动切换
+        const slider = document.getElementById('editorSlider');
+        let startX = 0, moving = false, current = 0;
+        editorWrap.addEventListener('touchstart', e=>{startX=e.touches[0].clientX});
+        editorWrap.addEventListener('touchmove', e=>{
+            moving=true;const dx=e.touches[0].clientX-startX;
+            slider.style.transform=`translateX(${-current*100+dx/window.innerWidth*100}%)`;
+        });
+        editorWrap.addEventListener('touchend', e=>{
+            if(!moving)return;moving=false;const dx=e.changedTouches[0].clientX-startX;
+            if(dx<-50&&current<3)current++;if(dx>50&&current>0)current--;
+            slider.style.transform=`translateX(${-current*100}%)`;updateBar();
+        });
+        function updateBar(){
+            document.querySelectorAll('.page-indicator .bar').forEach((b,i)=>b.classList.toggle('active',i===current));
+        }
+
+        // 头像预览
+        function previewAvatar(input, smallId, bigId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(smallId).src = e.target.result;
+                    document.getElementById(bigId).src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 表情包预览
+        function previewImg(input, smallId, bigId) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById(smallId).src = e.target.result;
+                    document.getElementById(bigId).src = e.target.result;
+                }
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        // 同步数据
+        function updateAll() {
+            document.getElementById('prev_name').innerText = document.getElementById('p_name').value;
+            document.getElementById('prev_status').innerText = document.getElementById('p_status').value;
+            document.getElementById('prev_time').innerText = document.getElementById('p_time').value;
+            document.getElementById('prev_title').innerText = document.getElementById('p_title').value;
+            document.getElementById('prev_content').innerText = document.getElementById('p_content').value;
+            document.getElementById('prev_view').innerText = '浏览 ' + document.getElementById('p_view').value;
+            document.getElementById('prev_like').innerText = '点赞 ' + document.getElementById('p_like').value;
+            document.getElementById('prev_reply').innerText = '回复 ' + document.getElementById('p_reply').value;
+
+            document.getElementById('prev_r1_name').innerText = document.getElementById('r1_name').value;
+            document.getElementById('prev_r1_status').innerText = document.getElementById('r1_status').value;
+            document.getElementById('prev_r1_time').innerText = document.getElementById('r1_time').value;
+            document.getElementById('prev_r1_content').innerText = document.getElementById('r1_content').value;
+            document.getElementById('prev_r1_like').innerText = '点赞 ' + document.getElementById('r1_like').value;
+
+            document.getElementById('prev_r2_name').innerText = document.getElementById('r2_name').value;
+            document.getElementById('prev_r2_status').innerText = document.getElementById('r2_status').value;
+            document.getElementById('prev_r2_time').innerText = document.getElementById('r2_time').value;
+            document.getElementById('prev_r2_content').innerText = document.getElementById('r2_content').value;
+            document.getElementById('prev_r2_like').innerText = '点赞 ' + document.getElementById('r2_like').value;
+
+            document.getElementById('prev_r3_name').innerText = document.getElementById('r3_name').value;
+            document.getElementById('prev_r3_status').innerText = document.getElementById('r3_status').value;
+            document.getElementById('prev_r3_time').innerText = document.getElementById('r3_time').value;
+            document.getElementById('prev_r3_content').innerText = document.getElementById('r3_content').value;
+            document.getElementById('prev_r3_like').innerText = '点赞 ' + document.getElementById('r3_like').value;
+        }
+
+        document.querySelectorAll('input:not(.file-input),textarea').forEach(i=>i.addEventListener('input',updateAll));
+        updateAll();
+    </script>
+</body>
+</html>
