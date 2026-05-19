@@ -39,14 +39,21 @@
 				border-radius: 22px;
 				padding: 38px 28px;
 				text-align: center;
-				box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 				position: relative;
 				animation: popIn 0.3s ease forwards;
 			}
 
 			@keyframes popIn {
-				from { transform: scale(0.9); opacity: 0; }
-				to { transform: scale(1); opacity: 1; }
+				from {
+					transform: scale(0.9);
+					opacity: 0;
+				}
+
+				to {
+					transform: scale(1);
+					opacity: 1;
+				}
 			}
 
 			.init-title {
@@ -65,22 +72,24 @@
 			}
 
 			.init-btn {
-			    width: 100%;
-			    padding: 14px;
-			    background: #666;     /* 原来的灰色 */
-			    color: #fff;
-			    border: none;
-			    border-radius: 14px;
-			    font-size: 16px;
-			    font-weight: bold;
-			    cursor: pointer;
-			    transition: background 0.2s;
+				width: 100%;
+				padding: 14px;
+				background: #666;
+				/* 原来的灰色 */
+				color: #fff;
+				border: none;
+				border-radius: 14px;
+				font-size: 16px;
+				font-weight: bold;
+				cursor: pointer;
+				transition: background 0.2s;
 			}
-			
+
 			.init-btn:active {
-			    background: #555;     /* 点击时的灰色 */
+				background: #555;
+				/* 点击时的灰色 */
 			}
-			
+
 			/* 默认隐藏编辑区 + 预览区 */
 			.main-content {
 				opacity: 0;
@@ -106,11 +115,12 @@
 				color: #999;
 				margin-bottom: 10px;
 			}
-			.author-tip{
-				text-align:center;
-				font-size:11px;
-				color:#bbbbbb;
-				margin:5px 0 15px;
+
+			.author-tip {
+				text-align: center;
+				font-size: 11px;
+				color: #bbbbbb;
+				margin: 5px 0 15px;
 			}
 
 			.editor-wrap {
@@ -390,12 +400,12 @@
 		<!-- 全新初始化弹窗 —— 打开页面只显示这个 -->
 		<div class="init-mask" id="initMask">
 			<div class="init-box">
-				<h2 class="init-title">使用须知</h2>
+				<h2 class="init-title">\(^O^)/</h2>
 				<p class="init-text">来自作者的碎碎念：
-首先谢谢您的喜欢，
-如有想法可投稿原作者。
-感谢每一位为爱发电的老师，
-祝您和您家产/推一直幸福^ω^</p>
+					首先谢谢您的喜欢，
+					如有想法可投稿原作者。
+					感谢每一位为爱发电的老师，
+					祝您和您家产/推一直幸福^ω^</p>
 				<button class="init-btn" id="enterBtn">确认知晓，开始使用</button>
 			</div>
 		</div>
@@ -430,7 +440,8 @@
 						<div class="item"><label>状态</label><input type="text" id="p_status" value="状态: 热恋中❤️"></div>
 						<div class="item"><label>时间</label><input type="text" id="p_time" value="2026-5-20 13:14"></div>
 						<div class="item"><label>标题</label><input type="text" id="p_title" value="@小熊"></div>
-						<div class="item"><label>内容</label><textarea id="p_content">・ﻌ・：ᗜ 𖥦 ᗜ★品尝我的全世界🍴</textarea></div>
+						<div class="item"><label>内容</label><textarea id="p_content">・ﻌ・：ᗜ 𖥦 ᗜ★品尝我的全世界🍴</textarea>
+						</div>
 
 						<div class="item">
 							<label>表情包</label>
@@ -469,8 +480,10 @@
 						</div>
 						<div class="item"><label>昵称</label><input type="text" id="r1_name" value="小熊"></div>
 						<div class="item"><label>状态</label><input type="text" id="r1_status" value="状态: 热恋中❤️"></div>
-						<div class="item"><label>时间</label><input type="text" id="r1_time" value="2026-5-20 13:15"></div>
-						<div class="item"><label>内容</label><input type="text" id="r1_content" value="请我吃毛豆？不用了谢谢。"></div>
+						<div class="item"><label>时间</label><input type="text" id="r1_time" value="2026-5-20 13:15">
+						</div>
+						<div class="item"><label>内容</label><input type="text" id="r1_content" value="请我吃毛豆？不用了谢谢。">
+						</div>
 						<div class="item">
 							<label>表情包</label>
 							<div class="upload-box">
@@ -505,7 +518,8 @@
 						</div>
 						<div class="item"><label>昵称</label><input type="text" id="r2_name" value="小队长"></div>
 						<div class="item"><label>状态</label><input type="text" id="r2_status" value="状态: 请勿打扰🚫"></div>
-						<div class="item"><label>时间</label><input type="text" id="r2_time" value="2026-5-20 13:16"></div>
+						<div class="item"><label>时间</label><input type="text" id="r2_time" value="2026-5-20 13:16">
+						</div>
 						<div class="item"><label>内容</label><input type="text" id="r2_content" value="？不许欺负小熊"></div>
 						<div class="item">
 							<label>表情包</label>
@@ -541,7 +555,8 @@
 						</div>
 						<div class="item"><label>昵称</label><input type="text" id="r3_name" value="大明星"></div>
 						<div class="item"><label>状态</label><input type="text" id="r3_status" value="状态: 我太难了🥺"></div>
-						<div class="item"><label>时间</label><input type="text" id="r3_time" value="2026-5-20 13:16"></div>
+						<div class="item"><label>时间</label><input type="text" id="r3_time" value="2026-5-20 13:16">
+						</div>
 						<div class="item"><label>内容</label><input type="text" id="r3_content" value=""></div>
 						<div class="item">
 							<label>表情包</label>
@@ -571,7 +586,8 @@
 					<div class="post-header">
 						<img class="avatar" id="prev_avatar" src="糕点师.jpg">
 						<div class="post-info">
-							<div class="nickname-row"><span class="nickname" id="prev_name"></span><span class="status" id="prev_status"></span></div>
+							<div class="nickname-row"><span class="nickname" id="prev_name"></span><span class="status"
+									id="prev_status"></span></div>
 							<div class="time" id="prev_time"></div>
 						</div>
 					</div>
@@ -589,7 +605,8 @@
 					<img class="avatar" id="prev_r1_avatar" src="熊奈.jpg">
 					<div class="reply-right">
 						<div class="reply-header">
-							<div class="nickname-row"><span class="nickname" id="prev_r1_name"></span><span class="status" id="prev_r1_status"></span></div><span class="floor">1楼</span>
+							<div class="nickname-row"><span class="nickname" id="prev_r1_name"></span><span
+									class="status" id="prev_r1_status"></span></div><span class="floor">1楼</span>
 						</div>
 						<div class="reply-content" id="prev_r1_content"></div>
 						<div class="reply-img-list"><img class="reply-img" id="prev_r1_img"></div>
@@ -601,7 +618,8 @@
 					<img class="avatar" id="prev_r2_avatar" src="队长.jpg">
 					<div class="reply-right">
 						<div class="reply-header">
-							<div class="nickname-row"><span class="nickname" id="prev_r2_name"></span><span class="status" id="prev_r2_status"></span></div><span class="floor">2楼</span>
+							<div class="nickname-row"><span class="nickname" id="prev_r2_name"></span><span
+									class="status" id="prev_r2_status"></span></div><span class="floor">2楼</span>
 						</div>
 						<div class="reply-content" id="prev_r2_content"></div>
 						<div class="reply-img-list"><img class="reply-img" id="prev_r2_img"></div>
@@ -613,7 +631,8 @@
 					<img class="avatar" id="prev_r3_avatar" src="大明星.jpg">
 					<div class="reply-right">
 						<div class="reply-header">
-							<div class="nickname-row"><span class="nickname" id="prev_r3_name"></span><span class="status" id="prev_r3_status"></span></div><span class="floor">3楼</span>
+							<div class="nickname-row"><span class="nickname" id="prev_r3_name"></span><span
+									class="status" id="prev_r3_status"></span></div><span class="floor">3楼</span>
 						</div>
 						<div class="reply-content" id="prev_r3_content"></div>
 						<div class="reply-img-list"><img class="reply-img" id="prev_r3_img" src="杰佣表情包.jpg"></div>
@@ -634,13 +653,15 @@
 			enterBtn.addEventListener('click', () => {
 				initMask.classList.add('hide');
 				mainContent.classList.add('show');
-				bgMusic.play().catch(()=>{});
+				bgMusic.play().catch(() => {});
 			});
 
 			// 滑动切换
 			const slider = document.getElementById('editorSlider');
 			const editorWrap = document.getElementById('editorWrap');
-			let startX = 0, moving = false, current = 0;
+			let startX = 0,
+				moving = false,
+				current = 0;
 			editorWrap.addEventListener('touchstart', e => {
 				startX = e.touches[0].clientX
 			});
