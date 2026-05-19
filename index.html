@@ -75,7 +75,6 @@
 				width: 100%;
 				padding: 14px;
 				background: #666;
-				/* 原来的灰色 */
 				color: #fff;
 				border: none;
 				border-radius: 14px;
@@ -87,7 +86,6 @@
 
 			.init-btn:active {
 				background: #555;
-				/* 点击时的灰色 */
 			}
 
 			/* 默认隐藏编辑区 + 预览区 */
@@ -120,7 +118,7 @@
 				text-align: center;
 				font-size: 11px;
 				color: #bbbbbb;
-				margin: 5px 0 15px;
+				margin: 5 0 15px;
 			}
 
 			.editor-wrap {
@@ -130,17 +128,21 @@
 				background: #fff;
 				margin-bottom: 20px;
 				box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+				position: relative;
+				padding-bottom: 40px;
 			}
 
 			.editor-slider {
 				display: flex;
 				transition: transform 0.3s ease;
+				align-items: flex-start;
 			}
 
 			.editor-page {
 				width: 100%;
 				flex-shrink: 0;
 				padding: 15px;
+				position: relative;
 			}
 
 			.editor-page h3 {
@@ -170,14 +172,18 @@
 				font-size: 14px;
 				outline: none;
 			}
-
-			.item textarea {
+			
+			/* ✅ 这里统一改成：默认一行高度 + 自动拉长 */
+			.item textarea,
+			.item input[type="text"] {
 				resize: none;
 				overflow: hidden;
-				min-height: 40px;
+				min-height: 30px; /* 一行高度 */
 				height: auto;
 				white-space: pre-wrap;
 				word-wrap: break-word;
+				line-height: 1.1;
+				padding: 4px 6px;
 			}
 
 			.item input:focus,
@@ -185,13 +191,37 @@
 				border-color: #0088ff;
 			}
 
-			.item .upload-box {
+			/* 图片上传 + 删除按钮容器 */
+			.upload-box {
 				display: flex;
 				align-items: center;
 				gap: 10px;
 				padding: 8px 10px;
 				border: 1px solid #ddd;
 				border-radius: 8px;
+			}
+
+			.img-preview-wrapper {
+				position: relative;
+				display: inline-block;
+			}
+
+			.img-del-btn {
+				position: absolute;
+				top: -6px;
+				right: -6px;
+				width: 18px;
+				height: 18px;
+				background: #ff4444;
+				color: #fff;
+				border-radius: 50%;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				font-size: 12px;
+				cursor: pointer;
+				border: none;
+				box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 			}
 
 			.avatar-upload {
@@ -230,14 +260,18 @@
 				object-fit: cover;
 			}
 
-			.page-indicator {
+			/* 全局统一导航栏 */
+			.global-indicator {
 				display: flex;
 				justify-content: center;
 				gap: 4px;
-				margin-top: 15px;
+				position: absolute;
+				bottom: 15px;
+				left: 15px;
+				right: 15px;
 			}
 
-			.page-indicator .bar {
+			.global-indicator .bar {
 				flex: 1;
 				height: 5px;
 				border-radius: 3px;
@@ -245,7 +279,7 @@
 				background: transparent;
 			}
 
-			.page-indicator .bar.active {
+			.global-indicator .bar.active {
 				background: #ccc;
 			}
 
@@ -397,7 +431,7 @@
 
 	<body>
 
-		<!-- 全新初始化弹窗 —— 打开页面只显示这个 -->
+		<!-- 初始化弹窗 -->
 		<div class="init-mask" id="initMask">
 			<div class="init-box">
 				<h2 class="init-title">\(^O^)/</h2>
@@ -410,9 +444,8 @@
 			</div>
 		</div>
 
-		<!-- 主内容：默认隐藏，点击后显示 -->
+		<!-- 主内容 -->
 		<div class="main-content" id="mainContent">
-
 			<audio id="bgMusic" loop preload="auto">
 				<source src="bgm.m4a" type="audio/mpeg">
 			</audio>
@@ -440,15 +473,19 @@
 						<div class="item"><label>状态</label><input type="text" id="p_status" value="状态: 热恋中❤️"></div>
 						<div class="item"><label>时间</label><input type="text" id="p_time" value="2026-5-20 13:14"></div>
 						<div class="item"><label>标题</label><input type="text" id="p_title" value="@小熊"></div>
-						<div class="item"><label>内容</label><textarea id="p_content">・ﻌ・：ᗜ 𖥦 ᗜ★品尝我的全世界🍴</textarea>
-						</div>
+						<div class="item"><label>内容</label><textarea id="p_content"
+								oninput="autoHeight(this)">・ﻌ・：ᗜ 𖥦 ᗜ★品尝我的全世界🍴</textarea></div>
 
 						<div class="item">
-							<label>表情包</label>
+							<label>表情包/图片</label>
 							<div class="upload-box">
 								<button class="upload-btn"
 									onclick="document.getElementById('p_img_input').click()">选择相册图片</button>
-								<img class="img-preview-small" id="p_img_small">
+								<div class="img-preview-wrapper">
+									<img class="img-preview-small" id="p_img_small">
+									<button class="img-del-btn hide"
+										onclick="clearImg('p_img_input','p_img_small','prev_p_img')">×</button>
+								</div>
 								<input type="file" id="p_img_input" class="file-input" accept="image/*"
 									onchange="previewImg(this, 'p_img_small', 'prev_p_img')">
 							</div>
@@ -457,12 +494,6 @@
 						<div class="item"><label>浏览</label><input type="text" id="p_view" value="1314"></div>
 						<div class="item"><label>点赞</label><input type="text" id="p_like" value="520"></div>
 						<div class="item"><label>回复数</label><input type="text" id="p_reply" value="52"></div>
-						<div class="page-indicator">
-							<div class="bar active"></div>
-							<div class="bar"></div>
-							<div class="bar"></div>
-							<div class="bar"></div>
-						</div>
 					</div>
 
 					<!-- 1楼 -->
@@ -482,25 +513,23 @@
 						<div class="item"><label>状态</label><input type="text" id="r1_status" value="状态: 热恋中❤️"></div>
 						<div class="item"><label>时间</label><input type="text" id="r1_time" value="2026-5-20 13:15">
 						</div>
-						<div class="item"><label>内容</label><input type="text" id="r1_content" value="请我吃毛豆？不用了谢谢。">
-						</div>
+						<div class="item"><label>内容</label><textarea id="r1_content"
+								oninput="autoHeight(this)">请我吃毛豆？不用了谢谢。</textarea></div>
 						<div class="item">
-							<label>表情包</label>
+							<label>表情包/图片</label>
 							<div class="upload-box">
 								<button class="upload-btn"
 									onclick="document.getElementById('r1_img_input').click()">选择相册图片</button>
-								<img class="img-preview-small" id="r1_img_small">
+								<div class="img-preview-wrapper">
+									<img class="img-preview-small" id="r1_img_small">
+									<button class="img-del-btn hide"
+										onclick="clearImg('r1_img_input','r1_img_small','prev_r1_img')">×</button>
+								</div>
 								<input type="file" id="r1_img_input" class="file-input" accept="image/*"
 									onchange="previewImg(this, 'r1_img_small', 'prev_r1_img')">
 							</div>
 						</div>
 						<div class="item"><label>点赞</label><input type="text" id="r1_like" value="52"></div>
-						<div class="page-indicator">
-							<div class="bar"></div>
-							<div class="bar active"></div>
-							<div class="bar"></div>
-							<div class="bar"></div>
-						</div>
 					</div>
 
 					<!-- 2楼 -->
@@ -520,24 +549,23 @@
 						<div class="item"><label>状态</label><input type="text" id="r2_status" value="状态: 请勿打扰🚫"></div>
 						<div class="item"><label>时间</label><input type="text" id="r2_time" value="2026-5-20 13:16">
 						</div>
-						<div class="item"><label>内容</label><input type="text" id="r2_content" value="？不许欺负小熊"></div>
+						<div class="item"><label>内容</label><textarea id="r2_content"
+								oninput="autoHeight(this)">？不许欺负小熊</textarea></div>
 						<div class="item">
-							<label>表情包</label>
+							<label>表情包/图片</label>
 							<div class="upload-box">
 								<button class="upload-btn"
 									onclick="document.getElementById('r2_img_input').click()">选择相册图片</button>
-								<img class="img-preview-small" id="r2_img_small">
+								<div class="img-preview-wrapper">
+									<img class="img-preview-small" id="r2_img_small">
+									<button class="img-del-btn hide"
+										onclick="clearImg('r2_img_input','r2_img_small','prev_r2_img')">×</button>
+								</div>
 								<input type="file" id="r2_img_input" class="file-input" accept="image/*"
 									onchange="previewImg(this, 'r2_img_small', 'prev_r2_img')">
 							</div>
 						</div>
 						<div class="item"><label>点赞</label><input type="text" id="r2_like" value="25"></div>
-						<div class="page-indicator">
-							<div class="bar"></div>
-							<div class="bar"></div>
-							<div class="bar active"></div>
-							<div class="bar"></div>
-						</div>
 					</div>
 
 					<!-- 3楼 -->
@@ -557,26 +585,33 @@
 						<div class="item"><label>状态</label><input type="text" id="r3_status" value="状态: 我太难了🥺"></div>
 						<div class="item"><label>时间</label><input type="text" id="r3_time" value="2026-5-20 13:16">
 						</div>
-						<div class="item"><label>内容</label><input type="text" id="r3_content" value=""></div>
+						<div class="item"><label>内容</label><textarea id="r3_content"
+								oninput="autoHeight(this)"></textarea></div>
 						<div class="item">
-							<label>表情包</label>
+							<label>表情包/图片</label>
 							<div class="upload-box">
 								<button class="upload-btn"
 									onclick="document.getElementById('r3_img_input').click()">选择相册图片</button>
-								<img class="img-preview-small" id="r3_img_small" src="杰佣表情包.jpg">
+								<div class="img-preview-wrapper">
+									<img class="img-preview-small" id="r3_img_small" src="杰佣表情包.jpg">
+									<button class="img-del-btn"
+										onclick="clearImg('r3_img_input','r3_img_small','prev_r3_img')">×</button>
+								</div>
 								<input type="file" id="r3_img_input" class="file-input" accept="image/*"
 									onchange="previewImg(this, 'r3_img_small', 'prev_r3_img')">
 							</div>
 						</div>
 						<div class="item"><label>点赞</label><input type="text" id="r3_like" value="13"></div>
-						<div class="page-indicator">
-							<div class="bar"></div>
-							<div class="bar"></div>
-							<div class="bar"></div>
-							<div class="bar active"></div>
-						</div>
 					</div>
 
+				</div>
+
+				<!-- 全局统一导航条 -->
+				<div class="global-indicator">
+					<div class="bar active"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
+					<div class="bar"></div>
 				</div>
 			</div>
 
@@ -644,7 +679,7 @@
 		</div>
 
 		<script>
-			// 初始化弹窗逻辑
+			// 初始化弹窗
 			const initMask = document.getElementById('initMask');
 			const enterBtn = document.getElementById('enterBtn');
 			const mainContent = document.getElementById('mainContent');
@@ -663,7 +698,7 @@
 				moving = false,
 				current = 0;
 			editorWrap.addEventListener('touchstart', e => {
-				startX = e.touches[0].clientX
+				startX = e.touches[0].clientX;
 			});
 			editorWrap.addEventListener('touchmove', e => {
 				moving = true;
@@ -677,11 +712,28 @@
 				if (dx < -50 && current < 3) current++;
 				if (dx > 50 && current > 0) current--;
 				slider.style.transform = `translateX(${-current*100}%)`;
-				updateBar();
+				updateGlobalBar();
 			});
 
-			function updateBar() {
-				document.querySelectorAll('.page-indicator .bar').forEach((b, i) => b.classList.toggle('active', i === current));
+			// 统一更新全局导航
+			function updateGlobalBar() {
+				document.querySelectorAll('.global-indicator .bar').forEach((b, i) => {
+					b.classList.toggle('active', i === current);
+				});
+			}
+
+			// ✅ 所有楼层内容框自动适应高度
+			function autoHeight(obj) {
+				obj.style.height = "auto";
+				obj.style.height = (obj.scrollHeight) + "px";
+			}
+
+			// 页面加载时全部初始化
+			window.onload = function() {
+				autoHeight(document.getElementById('p_content'));
+				autoHeight(document.getElementById('r1_content'));
+				autoHeight(document.getElementById('r2_content'));
+				autoHeight(document.getElementById('r3_content'));
 			}
 
 			// 头像预览
@@ -696,16 +748,31 @@
 				}
 			}
 
-			// 表情包预览
+			// 图片预览 + 显示删除按钮
 			function previewImg(input, smallId, bigId) {
+				const delBtn = document.getElementById(smallId).nextElementSibling;
 				if (input.files && input.files[0]) {
 					const reader = new FileReader();
 					reader.onload = function(e) {
 						document.getElementById(smallId).src = e.target.result;
 						document.getElementById(bigId).src = e.target.result;
-					}
+						delBtn.classList.remove('hide');
+					};
 					reader.readAsDataURL(input.files[0]);
 				}
+			}
+
+			// 清空图片
+			function clearImg(fileId, smallId, bigId) {
+				const fileInput = document.getElementById(fileId);
+				const img = document.getElementById(smallId);
+				const bigImg = document.getElementById(bigId);
+				const delBtn = img.nextElementSibling;
+
+				fileInput.value = '';
+				img.src = '';
+				bigImg.src = '';
+				delBtn.classList.add('hide');
 			}
 
 			// 同步数据
